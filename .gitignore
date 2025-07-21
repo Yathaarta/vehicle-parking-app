@@ -1,0 +1,99 @@
+# -----------------------------------------------------------------------------
+# Python Specific Files/Folders
+# -----------------------------------------------------------------------------
+# Byte-code files
+*.pyc
+__pycache__/
+*.pyd
+*.pyo
+
+# Virtual environments
+# Python virtual environments (venv, virtualenv)
+venv/
+env/
+.venv/
+.env/
+
+# Package installation
+*.egg-info/
+.installed.realpath
+*.egg
+dist/
+build/
+
+# Testing and linting
+.pytest_cache/
+.mypy_cache/
+.coverage
+
+# Jupyter Notebook files
+.ipynb_checkpoints/
+
+# -----------------------------------------------------------------------------
+# Flask Specific Files/Folders
+# -----------------------------------------------------------------------------
+# Instance folder for Flask (often contains sensitive configs or SQLite DBs)
+instance/
+
+# Flask-specific environment variables file (contains sensitive info)
+# IMPORTANT: This should almost always be ignored for security!
+.env
+.flaskenv
+
+# -----------------------------------------------------------------------------
+# Database Files (Adjust based on your DB, e.g., if using SQLite)
+# -----------------------------------------------------------------------------
+# For SQLite databases, if you keep your development DB in the project folder
+*.db
+*.sqlite
+*.sqlite3
+
+# -----------------------------------------------------------------------------
+# Operating System Files
+# -----------------------------------------------------------------------------
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# -----------------------------------------------------------------------------
+# IDE and Editor Specific Files
+# -----------------------------------------------------------------------------
+# VS Code
+.vscode/
+# Add specific settings you DO want to share (e.g., extensions.json)
+# but typically ignore user settings, tasks, and launch configs.
+# If you want to share workspace settings, remove .vscode/settings.json
+# For a typical app, ignoring the whole folder is fine initially.
+
+# PyCharm/IntelliJ
+.idea/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Atom
+.atom/
+
+# Vim
+*.swp
+*.swo
+
+# -----------------------------------------------------------------------------
+# Log and Temporary Files
+# -----------------------------------------------------------------------------
+*.log
+logs/
+tmp/
+
+# -----------------------------------------------------------------------------
+# Frontend Specific (If you use Node.js/NPM/Yarn for frontend assets)
+# -----------------------------------------------------------------------------
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json # If you're using npm and don't want to track this. Usually you DO want to track this.
