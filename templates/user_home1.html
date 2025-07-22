@@ -1,0 +1,145 @@
+{% extends "base_layout.html" %}
+
+{% block title %}User Dashboard - ParkAlot{% endblock %}
+{% block meta_description %}Manage your bookings and find parking slots easily with ParkAlot.{% endblock %}
+
+{% block head_extra %}
+    {{ super() }}
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+{% endblock %}
+
+{% block content %}
+<!-- Navbar -->
+<nav class="navbar custom-navbar">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        
+        <!-- Left Collapsible menu -->
+        <div class="d-flex align-items-center">
+            <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu"
+                aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand d-flex align-items-center mb-0" href="#">
+                <img src="/static/images/logo.png" alt="ParkAlot Logo" width="30" height="30" class="me-2">
+                <span class="brand-text">ParkAlot</span>
+            </a>
+
+            <!-- Welcome Message -->
+            <span class="ms-3 text-white fw-bold">Welcome, {{ user.user_name }}!</span>
+        </div>
+
+        <!-- Profile Button -->
+        <div>
+            <a href="{{ url_for('profile', user_id=user.user_id, slug=slugify(user.user_name)) }}" class="btn btn-outline-light">Profile</a>
+        </div>
+
+        <!-- Collapsible Menu -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarMenu">
+            <ul class="navbar-nav text-center">
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('user_home', user_id=user.user_id, slug=slugify(user.user_name)) }}">Home</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('summary') }}">Summary</a></li>
+                <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Dashboard Main Content -->
+<div class="container-fluid dashboard-bg py-4">
+    <h2 class="text-center text-danger mb-4">User Dashboard</h2>
+
+    <!-- Recent Parking History -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">Recent Parking History</div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Location</th>
+                        <th>Vehicle No</th>
+                        <th>Timestamp</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in parking_history %}
+                    <tr>
+                        <td>{{ record.id }}</td>
+                        <td>{{ record.location }}</td>
+                        <td>{{ record.vehicle_no }}</td>
+                        <td>{{ record.timestamp }}</td>
+                        <td>
+                            {% if record.status == 'parked' %}
+                                <a href="{{ url_for('release', id=record.id) }}" class="btn btn-sm btn-danger">Release</a>
+                            {% else %}
+                                <span class="btn btn-sm btn-success disabled">Parked Out</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Search Parking -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">Search Parking</div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('search_parking') }}">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <select class="form-select" name="city">
+                            <option value="" disabled selected>Select City</option>
+                            {% for city in cities %}
+                                <option value="{{ city }}">{{ city }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="pincode" placeholder="Enter Pincode">
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-dark w-100">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Parking Results -->
+    {% if parking_lots %}
+    <div class="card mt-4 shadow-sm">
+        <div class="card-header bg-success text-white">
+            Parking Lots @ {{ search_location }}
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Address</th>
+                        <th>Availability</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lot in parking_lots %}
+                    <tr>
+                        <td>{{ lot.id }}</td>
+                        <td>{{ lot.address }}</td>
+                        <td>{{ lot.available_slots }}</td>
+                        <td>
+                            <a href="{{ url_for('book_parking', id=lot.id) }}" class="btn btn-primary btn-sm">Book</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

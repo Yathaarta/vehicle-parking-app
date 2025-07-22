@@ -3,7 +3,6 @@ body {
     background-color: #0dbe71;
 }
 
-
 .custom-navbar {
     background-color: #0b2c3d;
     padding: 0.5rem 1rem;
@@ -35,6 +34,24 @@ body {
     background-size: 100% 100%;
 }
 
+.custom-navbar .navbar-nav {
+    flex-direction: row;
+}
+.custom-navbar .navbar-collapse {
+    
+    padding: 10px;
+    
+}
+
+.custom-navbar .nav-link {
+    color: white !important;
+    font-weight: 500;
+}
+
+.custom-navbar .nav-link:hover {
+    color: #17cd54 !important; /* Green hover */
+}
+
 .btn-success {
     font-weight: 500;
     color: black;
@@ -52,7 +69,7 @@ body {
 }
 
 
-.hero-section {
+.main-content {
   background-image: url('/static/images/bg_img.jpg'); 
   background-size: cover;
   background-position: center;
@@ -61,3 +78,15 @@ body {
   margin: 35px;
   padding: 40px;
 }
+
+
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); /* Stronger shadow */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Subtle border for definition */
+}
+
+
