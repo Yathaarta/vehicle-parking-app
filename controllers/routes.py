@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from slugify import slugify
 from datetime import timedelta
 app.permanent_session_lifetime = timedelta(minutes=10)
-
+from datetime import datetime
 # -------------------------
 # Public Home
 # -------------------------
@@ -97,16 +97,94 @@ def user_home(user_id, slug):
     if not user:
         flash("User not found!", "danger")
         return redirect(url_for('login'))
-    
-    if user.is_admin:
-        flash("Admins cannot access user home", "danger")
-        return redirect(url_for('admin_dashboard'))
 
-    return render_template('user_home.html', user=user)
+    # Fetch distinct cities
+    cities = [row[0] for row in db.session.query(ParkingLot.city).distinct().all()]
+
+    # Current time
+    now = datetime.now()
+
+    # Get all bookings of this user
+    current_bookings = UserBookings.query.filter_by(user_id=user_id).all()
+
+    expired_ids = []
+
+    # Handle expired bookings
+    for booking in current_bookings:
+        if booking.leaving_time < now:
+            expired_ids.append(booking.id)
+            # Move to history
+            history = UserHistory(
+                user_id=booking.user_id,
+                spot_id=booking.spot_id,
+                booking_time=booking.parking_time,
+                leaving_time=booking.leaving_time,
+                parking_cost=booking.parking_cost,
+                vehicle_no=booking.vehicle_no
+            )
+            db.session.add(history)
+            # Free spot
+            if booking.spot:
+                booking.spot.status = 'A'
+                if booking.spot.lot.occupied_spots > 0:
+                    booking.spot.lot.occupied_spots -= 1
+            db.session.delete(booking)
+    
+    if expired_ids:
+        db.session.commit()
+        flash("Your last booking expired. Please evacuate the parking spot or book again.", "warning")
+
+    # Fetch active bookings again (after cleanup)
+    active_bookings = UserBookings.query.filter_by(user_id=user_id).all()
+
+    # Recent history
+    recent_history = UserHistory.query.filter_by(user_id=user_id).order_by(UserHistory.id.desc()).limit(5).all()
+
+    return render_template('user_home1.html', user=user, cities=cities,
+                           current_bookings=active_bookings, recent_history=recent_history)
+
+
+#--------------------------
+#release booking-user
+#--------------------------
+@app.route('/release_booking/<int:booking_id>', methods=['POST'])
+def release_booking(booking_id):
+    if 'user_id' not in session:
+        flash("Please log in first", "warning")
+        return redirect(url_for('login'))
+
+    booking = UserBookings.query.get(booking_id)
+    if not booking or booking.user_id != session['user_id']:
+        flash("Invalid booking", "danger")
+        return redirect(url_for('user_home', user_id=session['user_id'], slug=slugify(session['username'])))
+
+    # Move booking to history
+    history = UserHistory(
+        user_id=booking.user_id,
+        spot_id=booking.spot_id,
+        booking_time=booking.parking_time,
+        leaving_time=booking.leaving_time,
+        parking_cost=booking.parking_cost,
+        vehicle_no=booking.vehicle_no
+    )
+    db.session.add(history)
+
+    # Free the parking spot
+    if booking.spot:
+        booking.spot.status = 'A'
+        if booking.spot.lot.occupied_spots > 0:
+            booking.spot.lot.occupied_spots -= 1
+
+    db.session.delete(booking)
+    db.session.commit()
+    flash("Booking released successfully!", "success")
+
+    return redirect(url_for('user_home', user_id=session['user_id'], slug=slugify(session['username'])))
+
 
 
 # -------------------------
-# LOGOUT
+# LOGOUT-both
 # -------------------------
 @app.route('/logout')
 def logout():
@@ -116,7 +194,7 @@ def logout():
 
 
 # -------------------------
-# PROFILE
+# PROFILE-user
 # -------------------------
 @app.route('/<int:user_id>-<slug>/profile', methods=['GET', 'POST'])
 def profile(user_id, slug):
@@ -172,7 +250,7 @@ def admin_dashboard():
 
 
 #--------------------------
-# EDIT PROFILE
+# EDIT PROFILE-admin
 #--------------------------
 @app.route('/admin/profile', methods=['GET', 'POST'])
 def admin_profile():
@@ -213,7 +291,7 @@ def admin_profile():
     return render_template('admin_profile.html', user=user)
 
 # -------------------------
-# ADD PARKING LOT
+# ADD PARKING LOT-admin
 # -------------------------
 @app.route('/admin/add_parking_lot', methods=['GET', 'POST'])
 def add_parking():
@@ -222,15 +300,18 @@ def add_parking():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        name = request.form.get('name')
+        area_type = request.form.get('area_type')
         address = request.form.get('address')
+        prime_loc = request.form.get('primelocation_name')
+        price_per_hr = float(request.form.get('price_per_hr'))
         city = request.form.get('city')
         pincode = request.form.get('pincode')
-        capacity = int(request.form.get('capacity'))
-        price_per_hr = float(request.form.get('price_per_hr'))
+        max_spots = int(request.form.get('capacity'))
+        occupied_spots = 0  # Initially set to 0
 
-        new_lot = ParkingLot(name=name, address=address, city=city, pincode=pincode,
-                              capacity=capacity, occupied=0, price_per_hr=price_per_hr)
+        new_lot = ParkingLot(area_type=area_type, city=city, primelocation_name=prime_loc,
+                             price_per_hr=price_per_hr, address=address, pincode=pincode, max_spots=max_spots,
+                             occupied_spots=occupied_spots)
 
         db.session.add(new_lot)
         db.session.commit()
@@ -241,7 +322,7 @@ def add_parking():
 
 
 # -------------------------
-# DELETE PARKING LOT
+# DELETE PARKING LOT-admin
 # -------------------------
 @app.route('/admin/delete_parking_lot/<int:lot_id>')
 def delete_parking(lot_id):
@@ -253,6 +334,10 @@ def delete_parking(lot_id):
     if not lot:
         flash("Parking Lot not found!", "danger")
         return redirect(url_for('admin_dashboard'))
+    
+    if lot.occupied_spots > 0:
+        flash("Cannot delete Parking Lot with occupied spots!", "warning")
+        return redirect(url_for('admin_dashboard'))
 
     db.session.delete(lot)
     db.session.commit()
@@ -261,7 +346,7 @@ def delete_parking(lot_id):
 
 
 # -------------------------
-# EDIT PARKING LOT
+# EDIT PARKING LOT-admin
 # -------------------------
 @app.route('/admin/edit_parking_lot/<int:lot_id>', methods=['GET', 'POST'])
 def edit_parking(lot_id):
@@ -275,15 +360,142 @@ def edit_parking(lot_id):
         return redirect(url_for('admin_dashboard'))
 
     if request.method == 'POST':
-        lot.name = request.form.get('name')
+        lot.area_type = request.form.get('area_type')
         lot.address = request.form.get('address')
+        lot.primelocation_name = request.form.get('primelocation_name')
+        lot.price_per_hr = float(request.form.get('price_per_hr'))
         lot.city = request.form.get('city')
         lot.pincode = request.form.get('pincode')
-        lot.capacity = int(request.form.get('capacity'))
-        lot.price_per_hr = float(request.form.get('price_per_hr'))
+        lot.max_spots = int(request.form.get('capacity'))
+        lot.occupied_spots = int(request.form.get('occupied'))
+        
 
         db.session.commit()
         flash("Parking Lot updated successfully!", "success")
         return redirect(url_for('admin_dashboard'))
 
     return render_template('edit_parking_lot.html', lot=lot)
+
+#---------------------------
+# VIEW PARKING SPOTS-admin
+#---------------------------
+
+@app.route('/admin/parking_spots/<int:lot_id>')
+def parking_spots(lot_id):
+    if 'user_id' not in session or not session.get('is_admin'):
+        flash("Access denied! Admins only.", "danger")
+        return redirect(url_for('login'))
+
+    lot = ParkingLot.query.get(lot_id)
+    if not lot:
+        flash("Parking Lot not found!", "danger")
+        return redirect(url_for('admin_dashboard'))
+
+    spots = ParkingSpot.query.filter_by(lot_id=lot_id).all()
+    return render_template('parking_spots.html', lot=lot, spots=spots)
+
+
+# ------------------------
+# SEARCH PARKING-user
+# ------------------------
+@app.route('/search-parking', methods=['GET', 'POST'])
+def search_parking():
+    if 'user_id' not in session:
+        flash("Please log in first!", "warning")
+        return redirect(url_for('login'))
+
+    cities = [lot.city for lot in ParkingLot.query.distinct(ParkingLot.city)]
+
+    if request.method == 'POST':
+        city = request.form.get('city')
+        pincode = request.form.get('pincode')
+
+        query = ParkingLot.query
+        if city:
+            query = query.filter_by(city=city)
+        if pincode:
+            query = query.filter_by(pincode=pincode)
+
+        parking_lots = query.all()
+        return render_template('search_parking.html', parking_lots=parking_lots, cities=cities)
+
+    return render_template('search_parking.html', parking_lots=None, cities=cities)
+
+
+
+# ------------------------
+# BOOK AND CONFIRM SPOT-user
+# ------------------------
+@app.route('/book-spot/<int:lot_id>', methods=['GET', 'POST'])
+def book_spot(lot_id):
+    if 'user_id' not in session:
+        flash("Please log in first!", "warning")
+        return redirect(url_for('login'))
+
+    lot = ParkingLot.query.get(lot_id)
+    if not lot:
+        flash("Parking lot not found!", "danger")
+        return redirect(url_for('search_parking'))
+
+    # Check if spots available
+    available_spots = ParkingSpot.query.filter_by(lot_id=lot_id, status='A').all()
+    if not available_spots:
+        flash("No available spots in this parking lot!", "danger")
+        return redirect(url_for('search_parking'))
+
+    estimated_price = None
+    vehicle_no = parking_time = leaving_time = None
+
+    if request.method == 'POST':
+        vehicle_no = request.form.get('vehicle_no')
+        parking_time_str = request.form.get('parking_time')
+        leaving_time_str = request.form.get('leaving_time')
+        action = request.form.get('action')  # 'preview' or 'confirm'
+
+        try:
+            parking_time = datetime.fromisoformat(parking_time_str)
+            leaving_time = datetime.fromisoformat(leaving_time_str)
+        except ValueError:
+            flash("Invalid date format!", "danger")
+            return render_template('book_spot.html', lot=lot)
+
+        now = datetime.now()
+        if parking_time <= now:
+            flash("Parking start time must be in the future!", "warning")
+            return render_template('book_spot.html', lot=lot)
+
+        if leaving_time <= parking_time:
+            flash("Leaving time must be later than parking time!", "warning")
+            return render_template('book_spot.html', lot=lot)
+
+        # Calculate cost
+        hours = (leaving_time - parking_time).total_seconds() / 3600
+        estimated_price = round(hours * lot.price_per_hr, 2)
+
+        if action == 'confirm':  #  Finalise booking
+            spot = ParkingSpot.query.filter_by(lot_id=lot_id, status='A').first()
+            if not spot:
+                flash("No available spots!", "danger")
+                return redirect(url_for('search_parking'))
+
+            booking = UserBookings(
+                user_id=session['user_id'],
+                spot_id=spot.spot_id,
+                parking_time=parking_time,
+                leaving_time=leaving_time,
+                parking_cost=estimated_price,
+                vehicle_no=vehicle_no
+            )
+
+            spot.status = 'O'
+            lot.occupied_spots += 1
+            db.session.add(booking)
+            db.session.commit()
+
+            flash(f"Booking confirmed! Total cost: ₹ {estimated_price}", "success")
+            return redirect(url_for('user_home', user_id=session['user_id'], slug=slugify(session['username'])))
+
+    return render_template('book_spot.html', lot=lot, estimated_price=estimated_price,
+                           vehicle_no=vehicle_no, parking_time=parking_time, leaving_time=leaving_time)
+
+

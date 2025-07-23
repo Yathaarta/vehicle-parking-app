@@ -30,6 +30,11 @@ class UserBookings(db.Model):
     parking_cost = db.Column(db.Numeric(7, 2), nullable=False)
     vehicle_no = db.Column(db.String(12), nullable=False)
 
+    spot = db.relationship('ParkingSpot', back_populates='bookings')
+    lot = db.relationship('ParkingLot', secondary='parking_spot',
+                       primaryjoin='UserBookings.spot_id==ParkingSpot.spot_id',
+                       secondaryjoin='ParkingSpot.lot_id==ParkingLot.lot_id',
+                       viewonly=True, uselist=False)
 
 class UserHistory(db.Model):
     __tablename__ = 'booking_history'
@@ -60,7 +65,7 @@ class ParkingLot(db.Model):
     spots = db.relationship('ParkingSpot', backref='lot', cascade="all, delete-orphan", passive_deletes=True)
 
     __table_args__ = (
-        db.CheckConstraint("area_type IN ('Open','Covered')", name='check_area_type'),
+        db.CheckConstraint("area_type IN ('Open','Covered','Both')", name='check_area_type'),
     )
     
     
@@ -72,7 +77,7 @@ class ParkingSpot(db.Model):
     lot_id = db.Column(db.Integer, db.ForeignKey("parkinglot.lot_id", ondelete="CASCADE"), nullable=False)
     status = db.Column(db.String(1), nullable=False)
 
-    bookings = db.relationship('UserBookings', backref='spot', passive_deletes=True)
+    bookings = db.relationship('UserBookings', back_populates='spot', passive_deletes=True)
     history = db.relationship('UserHistory', backref='spot', passive_deletes=True)
 
     __table_args__ = (

@@ -54,7 +54,7 @@
 
         <!-- Profile -->
         <div class="d-flex gap-2">
-            <a href="{{ url_for('admin_profile') }}" class="btn btn-light btn-sm">Edit Profile</a>
+            <a href="{{ url_for('admin_profile') }}" class="btn btn-outline-light">Edit Profile</a>
         </div>
 
         <!-- Collapsible Menu -->
@@ -111,6 +111,7 @@
                     <td>{{ lot.occupied_spots }}</td>
                     <td>
                         <a href="{{ url_for('edit_parking', lot_id=lot.lot_id) }}" class="btn btn-sm btn-primary">Edit</a>
+                        <a href="{{ url_for('parking_spots', lot_id=lot.lot_id) }}" class="btn btn-sm btn-info">View</a>
                         <a href="{{ url_for('delete_parking', lot_id=lot.lot_id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this lot?')">Delete</a>
                     </td>
                 </tr>
@@ -121,7 +122,7 @@
 
         <!-- Add Parking Lot Button -->
         <div class="text-center mt-4">
-            <a href="{{ url_for('add_parking') }}" class="btn btn-sm btn-primary">+ Add New Parking Lot</a>
+            <a href="{{ url_for('add_parking') }}" class="btn btn-dark">+ Add New Parking Lot</a>
         </div>
     </div>
 </div>

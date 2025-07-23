@@ -1,0 +1,51 @@
+{% extends "base_layout.html" %}
+{% block title %}Book Parking Spot{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="card shadow-sm p-4" style="max-width: 600px; margin: auto;">
+            <h4 class="mb-3">Book Parking Spot</h4>
+            <p><strong>Location:</strong> {{ lot.primelocation_name }} - {{ lot.address }}</p>
+            <p><strong>Price per hour:</strong> ₹{{ lot.price_per_hr }}</p>
+
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Vehicle Number</label>
+                    <input type="text" name="vehicle_no" class="form-control" required value="{{ vehicle_no or '' }}">
+                </div>
+            
+                <div class="mb-3">
+                    <label class="form-label">Parking Time</label>
+                    <input type="datetime-local" name="parking_time" class="form-control" required
+                           value="{{ parking_time.strftime('%Y-%m-%dT%H:%M') if parking_time else '' }}">
+                </div>
+            
+                <div class="mb-3">
+                    <label class="form-label">Leaving Time</label>
+                    <input type="datetime-local" name="leaving_time" class="form-control" required
+                           value="{{ leaving_time.strftime('%Y-%m-%dT%H:%M') if leaving_time else '' }}">
+                </div>
+            
+                <div class="mb-3">
+                    <strong>Total Price:</strong>
+                    {% if estimated_price %}
+                        <span class="text-success">₹ {{ estimated_price }}</span>
+                    {% else %}
+                        <span class="text-muted">Enter times to preview price</span>
+                    {% endif %}
+                </div>
+            
+                {% if estimated_price %}
+                    <!-- ✅ Button for confirm -->
+                    <button type="submit" name="action" value="confirm" class="btn btn-success w-100">Pay & Confirm</button>
+                {% else %}
+                    <!-- ✅ Button for preview -->
+                    <button type="submit" name="action" value="preview" class="btn btn-primary w-100">Preview Price</button>
+                {% endif %}
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

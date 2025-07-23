@@ -1,0 +1,82 @@
+{% extends "base_layout.html" %}
+{% block title %}Search Parking - ParkAlot{% endblock %}
+
+{% block head_extra %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/logged_in.css">
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+
+        <!-- Search Form -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-info text-white">Search Parking</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('search_parking') }}">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <select class="form-select" name="city">
+                                <option value="" disabled selected>Select City</option>
+                                {% for city in cities %}
+                                    <option value="{{ city }}">{{ city }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="pincode" placeholder="Enter Pincode">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-dark w-100">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Parking Lot Results -->
+        {% if parking_lots %}
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">Available Parking Lots</div>
+            <div class="card-body">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Lot ID</th>
+                            <th>City</th>
+                            <th>Prime Location</th>
+                            <th>Address</th>
+                            <th>Price/hr (₹)</th>
+                            <th>Capacity</th>
+                            <th>Available</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lot in parking_lots %}
+                        <tr>
+                            <td>{{ lot.lot_id }}</td>
+                            <td>{{ lot.city }}</td>
+                            <td>{{ lot.primelocation_name }}</td>
+                            <td>{{ lot.address }}</td>
+                            <td>{{ lot.price_per_hr }}</td>
+                            <td>{{ lot.max_spots }}</td>
+                            <td>{{ lot.max_spots - lot.occupied_spots }}</td>
+                            <td>
+                                {% if lot.max_spots > lot.occupied_spots %}
+                                    <a href="{{ url_for('book_spot', lot_id=lot.lot_id) }}" class="btn btn-primary btn-sm">Book Now</a>
+                                {% else %}
+                                    <span class="badge bg-danger">Full</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
