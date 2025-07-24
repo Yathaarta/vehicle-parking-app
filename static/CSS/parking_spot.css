@@ -3,7 +3,6 @@ body {
     background-color: #0dbe71;
 }
 
-/* Navbar Styles */
 .custom-navbar {
     background-color: #0b2c3d;
     padding: 0.5rem 1rem;
@@ -39,18 +38,14 @@ body {
     flex-direction: row;
 }
 .custom-navbar .navbar-collapse {
-    
+    background-color: #09464f;
     padding: 10px;
+    border-radius: 6px;
     
 }
-
-.custom-navbar .nav-link {
-    color: white !important;
-    font-weight: 500;
-}
-
-.custom-navbar .nav-link:hover {
-    color: #17cd54 !important; /* Green hover */
+.navbar-collapse .btn {
+    color: yellow;
+    font-weight: 400;
 }
 
 /* rest section */
@@ -62,6 +57,7 @@ body {
   height: 85vh; 
   margin: 35px;
   padding: 40px;
+  box-shadow: black 0px 0px 20px;
 }
 
 

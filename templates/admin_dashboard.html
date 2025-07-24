@@ -5,7 +5,8 @@
 
 {% block head_extra %}
     {{ super() }}
-    <link rel="stylesheet" href="/static/css/logged_in.css">
+    <link rel="stylesheet" href="/static/css/navbar2.css">
+
     <style>
         .table-container {
             max-height: 500px; /* Fixed height */
@@ -14,8 +15,8 @@
             background: white;
             border-radius: 8px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            outline: black solid 1px;
         }
-
         .table thead th {
             position: sticky;
             top: 0;
@@ -23,59 +24,23 @@
             color: white;
             z-index: 2;
         }
-
         .btn-sm {
             padding: 4px 10px;
             font-size: 14px;
         }
+           
     </style>
 {% endblock %}
 
 {% block content %}
-<!-- Navbar -->
-<nav class="navbar custom-navbar">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-        <!-- Left: Logo + Toggle -->
-        <div class="d-flex align-items-center">
-            <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <a class="navbar-brand d-flex align-items-center mb-0" href="{{ url_for('admin_dashboard') }}">
-                <img src="/static/images/logo.png" alt="ParkAlot Logo" width="30" height="30" class="d-inline-block me-2">
-                <span class="brand-text">ParkAlot</span>
-            </a>
+    <!-- Navbar -->
+    {% include "admin_navbar.html" %}
 
-            <!-- Welcome Message -->
-            <span class="ms-3 text-white fw-bold">Welcome, Admin!</span>
-        </div>
-
-
-
-        <!-- Profile -->
-        <div class="d-flex gap-2">
-            <a href="{{ url_for('admin_profile') }}" class="btn btn-outline-light">Edit Profile</a>
-        </div>
-
-        <!-- Collapsible Menu -->
-        <div class="collapse navbar-collapse justify-content-center" id="navbarContent">
-            <div class="d-flex flex-row gap-3">
-                <a class="nav-link text-white" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
-                <a class="nav-link text-white" href="#">Users</a>
-                <a class="nav-link text-white" href="#">Search</a>
-                <a class="nav-link text-white" href="#">Summary</a>
-                <a class="nav-link text-white" href="{{ url_for('logout') }}">Logout</a>
-            </div>
-        </div>
-    </div>
-</nav>
-
-<!-- Main Content -->
-<div class="main-content">
-    <div class="container mt-4">
+    <!-- Main Content -->
+    <div class="hero-section">
         <!-- Title -->
         <div class="text-center">
-            <h3 class="text-center mb-4" style="background-color: rgba(0, 0, 0, 0.7); color: white; display: inline-block; padding: 6px 12px; border-radius: 6px;">
+            <h3 class="custom-heading">
                 Parking Lots
             </h3>
         </div>
@@ -125,5 +90,4 @@
             <a href="{{ url_for('add_parking') }}" class="btn btn-dark">+ Add New Parking Lot</a>
         </div>
     </div>
-</div>
 {% endblock %}

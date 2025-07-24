@@ -5,110 +5,91 @@
 
 {% block head_extra %}
     {{ super() }}
-    <link rel="stylesheet" href="/static/css/logged_in.css">
+    <link rel="stylesheet" href="/static/css/navbar2.css">
+    <style>
+        .card {
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.1); 
+       }
+    </style>
 {% endblock %}
 
 {% block content %}
-<!-- Navbar -->
-<nav class="navbar custom-navbar">
-    <div class="container-fluid d-flex justify-content-between align-items-center">   
-        <!-- Left group: Hamburger + Logo -->
-        <div class="d-flex align-items-center">
-            <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>   
-            <a class="navbar-brand d-flex align-items-center mb-0" href="{{ url_for('admin_dashboard') }}">
-                <img src="/static/images/logo.png" alt="ParkAlot Logo" width="30" height="30" class="d-inline-block me-2">
-                <span class="brand-text">ParkAlot</span>
-            </a>
-            
-            <!-- Welcome Message -->
-            <span class="ms-3 text-white fw-bold">Welcome, Admin {{user.user_name}}!</span>
-        </div>   
-
-        <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
-            <div class="d-flex flex-row gap-3">
-                <a class="nav-link text-white" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
-                <a class="nav-link text-white" href="#">Users</a>
-                <a class="nav-link text-white" href="#">Search</a>
-                <a class="nav-link text-white" href="#">Summary</a>
-                <a class="nav-link text-white" href="{{ url_for('logout') }}">Logout</a>
-            </div>
-        </div>
-    </div>
-</nav>
-
-<div class="main-content">
-<!-- Profile Content -->
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <!-- User Info Card -->
-            <div class="card mb-4 shadow-sm">
-                <div class="card-body">
-                    <h4 class="card-title mb-3">Profile Details</h4>
-                    <p><strong>Name:</strong> {{ user.user_name }}</p>
-                    <p><strong>Email:</strong> {{ user.email_id }}</p>
+    <!-- Navbar -->
+    {% include "admin_navbar.html" %}
+    
+    <div class="hero-section">
+    <!-- Profile Content -->
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <!-- User Info Card -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Profile Details</h4>
+                        <p><strong>Name:</strong> {{ user.user_name }}</p>
+                        <p><strong>Email:</strong> {{ user.email_id }}</p>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Update Options -->
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="mb-3">Update Your Details</h5>
-
-                    <!-- Buttons -->
-                    <div class="d-flex flex-column gap-2">
-                        <button class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#updateName">Edit Name</button>
-                        <button class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#updateEmail">Change Email</button>
-                        <button class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#updatePassword">Change Password</button>
+    
+                <!-- Update Options -->
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="mb-3">Update Your Details</h5>
+    
+                        <!-- Buttons -->
+                        <div class="d-flex flex-column gap-2">
+                            <button class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#updateName">Edit Name</button>
+                            <button class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#updateEmail">Change Email</button>
+                            <button class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#updatePassword">Change Password</button>
+                        </div>
+    
+                        <!-- Update Name Form -->
+                        <div class="collapse mt-3" id="updateName">
+                            <form method="POST" action="{{ url_for('profile', user_id=user.user_id, slug=slugify(user.user_name)) }}">
+                                <input type="hidden" name="action" value="update_name">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">New Name</label>
+                                    <input type="text" class="form-control" name="username" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update Name</button>
+                            </form>
+                        </div>
+    
+                        <!-- Update Email Form -->
+                        <div class="collapse mt-3" id="updateEmail">
+                            <form method="POST" action="{{ url_for('profile', user_id=user.user_id, slug=slugify(user.user_name)) }}">
+                                <input type="hidden" name="action" value="update_email">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">New Email</label>
+                                    <input type="email" class="form-control" name="email" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update Email</button>
+                            </form>
+                        </div>
+    
+                        <!-- Update Password Form -->
+                        <div class="collapse mt-3" id="updatePassword">
+                            <form method="POST" action="{{ url_for('profile', user_id=user.user_id, slug=slugify(user.user_name)) }}">
+                                <input type="hidden" name="action" value="update_password">
+                                <div class="mb-3">
+                                    <label for="old_password" class="form-label">Old Password</label>
+                                    <input type="password" class="form-control" name="old_password" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="new_password" class="form-label">New Password</label>
+                                    <input type="password" class="form-control" name="new_password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update Password</button>
+                            </form>
+                        </div>
+    
                     </div>
-
-                    <!-- Update Name Form -->
-                    <div class="collapse mt-3" id="updateName">
-                        <form method="POST" action="{{ url_for('profile', user_id=user.user_id, slug=slugify(user.user_name)) }}">
-                            <input type="hidden" name="action" value="update_name">
-                            <div class="mb-3">
-                                <label for="username" class="form-label">New Name</label>
-                                <input type="text" class="form-control" name="username" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Update Name</button>
-                        </form>
-                    </div>
-
-                    <!-- Update Email Form -->
-                    <div class="collapse mt-3" id="updateEmail">
-                        <form method="POST" action="{{ url_for('profile', user_id=user.user_id, slug=slugify(user.user_name)) }}">
-                            <input type="hidden" name="action" value="update_email">
-                            <div class="mb-3">
-                                <label for="email" class="form-label">New Email</label>
-                                <input type="email" class="form-control" name="email" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Update Email</button>
-                        </form>
-                    </div>
-
-                    <!-- Update Password Form -->
-                    <div class="collapse mt-3" id="updatePassword">
-                        <form method="POST" action="{{ url_for('profile', user_id=user.user_id, slug=slugify(user.user_name)) }}">
-                            <input type="hidden" name="action" value="update_password">
-                            <div class="mb-3">
-                                <label for="old_password" class="form-label">Old Password</label>
-                                <input type="password" class="form-control" name="old_password" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="new_password" class="form-label">New Password</label>
-                                <input type="password" class="form-control" name="new_password" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Update Password</button>
-                        </form>
-                    </div>
-
                 </div>
             </div>
         </div>
     </div>
-</div>
-</div>
+    </div>
 {% endblock %}

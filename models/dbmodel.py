@@ -62,7 +62,7 @@ class ParkingLot(db.Model):
     max_spots = db.Column(db.Integer, nullable=False)       # Total capacity
     occupied_spots = db.Column(db.Integer, default=0)       # Current occupied spots
 
-    spots = db.relationship('ParkingSpot', backref='lot', cascade="all, delete-orphan", passive_deletes=True)
+    spots = db.relationship('ParkingSpot', backref='lot', cascade="all, delete-orphan", passive_deletes=False)
 
     __table_args__ = (
         db.CheckConstraint("area_type IN ('Open','Covered','Both')", name='check_area_type'),
@@ -74,7 +74,7 @@ class ParkingSpot(db.Model):
     __tablename__ = 'parking_spot'
 
     spot_id = db.Column(db.Integer, primary_key=True, autoincrement=True, unique=True, nullable=False)
-    lot_id = db.Column(db.Integer, db.ForeignKey("parkinglot.lot_id", ondelete="CASCADE"), nullable=False)
+    lot_id = db.Column(db.Integer, db.ForeignKey("parkinglot.lot_id"), nullable=False)
     status = db.Column(db.String(1), nullable=False)
 
     bookings = db.relationship('UserBookings', back_populates='spot', passive_deletes=True)

@@ -1,0 +1,52 @@
+{% extends "base_layout.html" %}
+{% block title %}Admin Summary - ParkAlot{% endblock %}
+{% block head_extra %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="/static/css/navbar2.css">
+{% endblock %}
+
+{% block content %}
+{% include "admin_navbar.html" %}
+
+<div class="hero-section">
+    <div class="container">
+        <h3 class="text-center mb-4 custom-heading">Platform Summary</h3>
+
+        <!-- Stats Overview -->
+        <div class="row text-center mb-4">
+            <div class="col-md-3"><div class="card p-3 shadow"><h6>Total Users</h6><h4>{{ total_users }}</h4></div></div>
+            <div class="col-md-3"><div class="card p-3 shadow"><h6>Parking Lots</h6><h4>{{ total_lots }}</h4></div></div>
+            <div class="col-md-3"><div class="card p-3 shadow"><h6>Active Bookings</h6><h4>{{ total_bookings }}</h4></div></div>
+            <div class="col-md-3"><div class="card p-3 shadow"><h6>Booking History</h6><h4>{{ total_history }}</h4></div></div>
+        </div>
+
+        <!-- Chart -->
+        <div class="card shadow-sm p-4">
+            <h5 class="mb-3 text-center">Top Booked Parking Lots</h5>
+            <canvas id="adminChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+const ctx = document.getElementById('adminChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ labels | safe }},
+        datasets: [{
+            label: 'Number of Bookings',
+            data: {{ counts | safe }},
+            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } }
+    }
+});
+</script>
+{% endblock %}

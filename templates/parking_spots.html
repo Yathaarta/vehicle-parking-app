@@ -1,60 +1,21 @@
 {% extends "base_layout.html" %}
-
 {% block title %}Manage Parking Spots{% endblock %}
-{% block meta_description %}View, edit, and manage parking spots for this lot.{% endblock %}
 
 {% block head_extra %}
 {{ super() }}
-<link rel="stylesheet" href="/static/css/parking_spot.css">
+<link rel="stylesheet" href="/static/CSS/parking_spot.css">
 {% endblock %}
 
 {% block content %}
+{% include "admin_navbar.html" %}
 
-<!-- Navbar -->
-<nav class="navbar custom-navbar">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-        <!-- Left: Logo + Toggle -->
-        <div class="d-flex align-items-center">
-            <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <a class="navbar-brand d-flex align-items-center mb-0" href="{{ url_for('admin_dashboard') }}">
-                <img src="/static/images/logo.png" alt="ParkAlot Logo" width="30" height="30" class="d-inline-block me-2">
-                <span class="brand-text">ParkAlot</span>
-            </a>
-
-            <!-- Welcome Message -->
-            <span class="ms-3 text-white fw-bold">Welcome, Admin!</span>
-        </div>
-
-
-
-        <!-- Profile -->
-        <div class="d-flex gap-2">
-            <a href="{{ url_for('admin_profile') }}" class="btn btn-light btn-sm">Edit Profile</a>
-        </div>
-
-        <!-- Collapsible Menu -->
-        <div class="collapse navbar-collapse justify-content-center" id="navbarContent">
-            <div class="d-flex flex-row gap-3">
-                <a class="nav-link text-white" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
-                <a class="nav-link text-white" href="#">Users</a>
-                <a class="nav-link text-white" href="#">Search</a>
-                <a class="nav-link text-white" href="#">Summary</a>
-                <a class="nav-link text-white" href="{{ url_for('logout') }}">Logout</a>
-            </div>
-        </div>
-    </div>
-</nav>
-
-<!-- Main Content -->
 <div class="main-content">
     <div class="container spot-container">
-        <!-- Title -->
-        <h3>View and Edit Parking Spots</h3>
-        <p class="text-center mb-3">Parking Lot: <strong>{{ lot.primelocation_name }}</strong> (City: {{ lot.city }})</p>
-    
+        <h3 class="text-center">View and Edit Parking Spots</h3>
+        <p class="text-center mb-3">
+            Parking Lot: <strong>{{ lot.primelocation_name }}</strong> (City: {{ lot.city }})
+        </p>
+
         <div class="row">
             <!-- Left: Spots Grid -->
             <div class="col-md-7">
@@ -67,7 +28,7 @@
                     {% endfor %}
                 </div>
             </div>
-    
+
             <!-- Right: Details Panel -->
             <div class="col-md-5">
                 <div class="details-panel" id="details-panel">
@@ -78,9 +39,9 @@
                 </div>
             </div>
         </div>
-    
+
         <!-- Instructions -->
-        <div class="instructions">
+        <div class="instructions mt-3">
             <p>✔ Click on an <strong style="color:red;">Occupied</strong> spot to view booking details.</p>
             <p>✔ Click on an <strong style="color:green;">Available</strong> spot to delete it.</p>
         </div>
@@ -88,35 +49,53 @@
 </div>
 
 <script>
-    function showDetails(spotId, status) {
-        const panel = document.getElementById("details-content");
+function showDetails(spotId, status) {
+    const panel = document.getElementById("details-content");
 
-        if (status === 'O') {
-            // Show booking details (Placeholder for now)
-            panel.innerHTML = `
-                <p><strong>Spot ID:</strong> ${spotId}</p>
-                <p><strong>Status:</strong> Occupied</p>
-                <p><strong>Customer ID:</strong> #1234</p>
-                <p><strong>Vehicle No:</strong> MH12AB1234</p>
-                <p><strong>Date/Time:</strong> 2025-07-22 10:30 AM</p>
-                <p><strong>Est. Cost:</strong> ₹150</p>
-                <button class="btn btn-secondary mt-2" onclick="clearDetails()">Close</button>
-            `;
-        } else {
-            // Show delete option for available spot
-            panel.innerHTML = `
-                <p><strong>Spot ID:</strong> ${spotId}</p>
-                <p><strong>Status:</strong> Available</p>
-                <form method="POST" action="/admin/delete_spot/${spotId}">
-                    <button type="submit" class="btn btn-danger mt-2" onclick="return confirm('Delete this spot?')">Delete Spot</button>
-                </form>
-                <button class="btn btn-secondary mt-2" onclick="clearDetails()">Close</button>
-            `;
-        }
+    if (status === 'O') {
+        fetch(`/admin/spot-details/${spotId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    panel.innerHTML = `<p class="text-danger">${data.error}</p>`;
+                } else {
+                    panel.innerHTML = `
+                        <p><strong>User:</strong> ${data.user_name}</p>
+                        <p><strong>Email:</strong> ${data.email}</p>
+                        <p><strong>Vehicle No:</strong> ${data.vehicle_no}</p>
+                        <p><strong>Start:</strong> ${data.parking_time}</p>
+                        <p><strong>Expiry:</strong> ${data.leaving_time}</p>
+                        <p><strong>Paid Cost:</strong> ₹${data.parking_cost}</p>
+                        <button class="btn btn-secondary mt-2" onclick="clearDetails()">Close</button>
+                    `;
+                }
+            });
+    } else {
+        panel.innerHTML = `
+            <p><strong>Spot ID:</strong> ${spotId}</p>
+            <p><strong>Status:</strong> Available</p>
+            <button class="btn btn-danger mt-2" onclick="deleteSpot(${spotId})">Delete Spot</button>
+            <button class="btn btn-secondary mt-2" onclick="clearDetails()">Close</button>
+        `;
     }
+}
 
-    function clearDetails() {
-        document.getElementById("details-content").innerHTML = "Click a parking spot to view details here.";
+function clearDetails() {
+    document.getElementById("details-content").innerHTML = "Click a parking spot to view details here.";
+}
+
+function deleteSpot(spotId) {
+    if (confirm('Are you sure you want to delete this spot?')) {
+        fetch(`/admin/delete_spot/${spotId}`, { method: 'POST' })
+            .then(response => {
+                if (response.ok) {
+                    alert('Spot deleted successfully!');
+                    location.reload();
+                } else {
+                    alert('Failed to delete spot.');
+                }
+            });
     }
+}
 </script>
 {% endblock %}

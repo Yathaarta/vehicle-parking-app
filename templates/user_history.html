@@ -1,0 +1,77 @@
+{% extends "base_layout.html" %}
+
+{% block title %}User Booking History - ParkAlot{% endblock %}
+{% block meta_description %}View all your previous parking bookings on ParkAlot.{% endblock %}
+
+{% block head_extra %}
+    {{ super() }}
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/navbar2.css">
+    <style>
+        /* Make history scrollable inside card */
+        .scrollable-history {
+            max-height: 400px; /* Adjust as needed */
+            overflow-y: auto;
+        }
+        .scrollable-history::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrollable-history::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 4px;
+        }
+        .scrollable-history::-webkit-scrollbar-thumb:hover {
+            background-color: #555;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Navbar -->
+    {% include "user_navbar.html" %}
+
+    <!-- Main Content -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">User Booking History</div>
+                <div class="card-body scrollable-history">
+                    {% if user_history %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Location</th>
+                                <th>Vehicle No</th>
+                                <th>Start DateTime</th>
+                                <th>Expiry DateTime</th>
+                                <th>Paid Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in user_history %}
+                            <tr>
+                                <td>{{ record.id }}</td>
+                                <td>
+                                    {% if record.spot and record.spot.lot %}
+                                        {{ record.spot.lot.address }}
+                                    {% else %}
+                                        Deleted Lot
+                                    {% endif %}
+                                </td>
+                                <td>{{ record.vehicle_no }}</td>
+                                <td>{{ record.booking_time.strftime('%d-%m-%Y %H:%M') }}</td>
+                                <td>{{ record.leaving_time.strftime('%d-%m-%Y %H:%M') }}</td>
+                                <td>₹ {{ record.parking_cost }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                        <p class="text-muted text-center">No booking history available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

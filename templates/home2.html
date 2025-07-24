@@ -12,44 +12,24 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/css/navbar2.css">
+
 {% endblock %}
 
 {% block content %}
     <!-- Navbar -->
-    <nav class="navbar custom-navbar">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
-
-            <!-- Left group: Hamburger + Logo -->
-            <div class="d-flex align-items-center">
-                <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-                    aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <a class="navbar-brand d-flex align-items-center mb-0" href="{{ url_for('home') }}">
-                    <img src="/static/images/logo.png" alt="ParkAlot Logo" width="30" height="30" class="d-inline-block me-2">
-                    <span class="brand-text">ParkAlot</span>
-                </a>
-            </div>
-
-            <!-- Right group: login and signup buttons -->
-            <div class="d-flex gap-2">
-                <a href="{{url_for('login')}}" class="btn btn-success">User login</a>
-                <a href="{{ url_for('register') }}" class="btn btn-primary">Register</a>
-            </div>
-            
-            <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
-                <!-- Collapsible contents (future) -->
-            </div>
-        </div>
-    </nav>
+    {% include "public_home_nav.html" %}
 
     <!-- Hero Section -->
     <div class="hero-section d-flex justify-content-between align-items-center p-4">
         <!-- Left Text -->
-        <div class="hero-text text-white">
+        <div class="custom-heading">
             <h1 class="fw-bold">Booking Parking gets easy with ParkAlot</h1>
-            <p>Book your parking spot in seconds with ease.</p>
+            <h5>Book your parking spot in seconds with ease.</h5><br><br>
+            We hope to get our services to every city in India.<br>
+            It will not be possible without your support,<br>
+            So, please register and help us grow.<br><br><br>
+            Visit contact us page for any queries or suggestions.<br>
+            Visit about us page to know more about us.
         </div>
 
         <!-- Bootstrap Form -->
@@ -62,20 +42,30 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="state" class="form-label">Your State</label>
-                    <select class="form-select" id="state" name="state" required>
-                        <option value="" disabled selected>Select State</option>
-                        <option>State 1</option>
-                        <option>State 2</option>
-                    </select>
+                    <label for="pincode" class="form-label">Pincode</label>
+                    <input type="text" class="form-control" id="pin" name="pincode" placeholder="Enter pincode">
                 </div>
 
                 <div class="mb-3">
                     <label for="city" class="form-label">Your City</label>
                     <select class="form-select" id="city" name="city" required>
                         <option value="" disabled selected>Select City</option>
-                        <option>City 1</option>
-                        <option>City 2</option>
+                        <option>Mumbai</option>
+                        <option>Delhi</option>
+                        <option>Noida</option>
+                        <option>Gurugram</option>
+                        <option>Bangalore</option>
+                        <option>Pune</option>
+                        <option>Hyderabad</option>
+                        <option>Chennai</option>
+                        <option>Ahmedabad</option>
+                        <option>Jaipur</option>
+                        <option>Kolkata</option>
+                        <option>Indore</option>
+                        <option>Bhopal</option>
+                        <option>Lucknow</option>
+                        <option>Chandigarh</option>
+                        <option>Kochi</option>
                     </select>
                 </div> <br>
 

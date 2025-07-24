@@ -1,0 +1,52 @@
+{% extends "base_layout.html" %}
+
+{% block title %}Contact Us - ParkAlot{% endblock %}
+{% block meta_description %}Get in touch with ParkAlot support.{% endblock %}
+
+{% block head_extra %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/navbar2.css">
+    <style>
+
+        .contact-details-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            margin-top: 30px;
+        }
+        .contact-details-box p {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .contact-details-box strong {
+            color: #007bff; /* A blue color for emphasis */
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Navbar -->
+    {% include "public_home_nav.html" %}
+    
+    <!-- Main Content -->
+    <div class="hero-section">
+        <div class="text-center">
+            <h3 class="custom-heading">
+                Contact Us
+            </h3>
+        </div>
+        <div class="d-flex align-items-center justify-content-center">
+            <div class="contact-details-box">
+                <p>For any inquiries or support, please feel free to reach out to us:</p>
+                <p><strong>Email:</strong> support@parkalot.com</p>
+                <p><strong>Phone:</strong> +91 12345 67890</p>
+                <p><strong>Address:</strong> ParkAlot Headquarters, 123 Parking Lane, Cityville, Pune, Maharashtra , 123456, India</p>
+                <p>Our team is available from 9 AM to 6 PM (IST), Monday to Friday.</p>
+                <p>We look forward to assisting you!</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,32 @@
+    <!-- Navbar -->
+    <nav class="navbar custom-navbar">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+
+            <!-- Left group: Hamburger + Logo -->
+            <div class="d-flex align-items-center">
+                <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                    aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <a class="navbar-brand d-flex align-items-center mb-0" href="{{ url_for('home') }}">
+                    <img src="/static/images/logo.png" alt="ParkAlot Logo" width="30" height="30" class="d-inline-block me-2">
+                    <span class="brand-text">ParkAlot</span>
+                </a>
+            </div>
+
+            <!-- Right group: login and signup buttons -->
+            <div class="d-flex gap-2">
+                <a href="{{url_for('login')}}" class="btn btn-success">User login</a>
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Register</a>
+            </div>
+            
+            <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+                <div class="d-flex flex-row gap-3">
+                    <a class="btn btn-outline-secondary" href="{{ url_for('home') }}">Home</a>
+                    <a class="btn btn-outline-secondary" href="{{ url_for('about') }}">About us</a>
+                    <a class="btn btn-outline-secondary" href="{{ url_for('contact') }}">Contact us</a>
+                </div>
+            </div>
+        </div>
+    </nav>

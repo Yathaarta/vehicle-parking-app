@@ -1,8 +1,21 @@
 {% extends "base_layout.html" %}
-{% block title %}Book Parking Spot{% endblock %}
+
+{% block title %}Book a Spot at {{lot.primelocation_name}}{% endblock %}
+{% block meta_description %} Booking Parking spot {% endblock %}
+
+{% block head_extra %}                
+    {{super()}}
+    <style>
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+        
+    </style>
+{% endblock %}
 
 {% block content %}
-<div class="hero-section">
+<body class="d-flex align-items-center justify-content-center vh-100 bg-light">
     <div class="container">
         <div class="card shadow-sm p-4" style="max-width: 600px; margin: auto;">
             <h4 class="mb-3">Book Parking Spot</h4>
@@ -37,15 +50,19 @@
                 </div>
             
                 {% if estimated_price %}
-                    <!-- ✅ Button for confirm -->
+                    <!-- Button for confirm -->
                     <button type="submit" name="action" value="confirm" class="btn btn-success w-100">Pay & Confirm</button>
                 {% else %}
-                    <!-- ✅ Button for preview -->
+                    <!-- Button for preview -->
                     <button type="submit" name="action" value="preview" class="btn btn-primary w-100">Preview Price</button>
                 {% endif %}
             </form>
+            <p class="text-center mt-3">
+                <a href="{{ url_for('search_parking', user_id=user.user_id, slug=slugify(user.user_name)) }}">Go back</a>
+            </p>
 
         </div>
     </div>
 </div>
+</body>
 {% endblock %}

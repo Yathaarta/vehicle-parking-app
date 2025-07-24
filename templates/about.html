@@ -1,0 +1,73 @@
+{% extends "base_layout.html" %}
+
+{% block title %}About Us - ParkAlot{% endblock %}
+{% block meta_description %}Learn more about ParkAlot and our mission.{% endblock %}
+
+{% block head_extra %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/navbar2.css">
+    <style>
+       
+        .content-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            margin-top: 30px;
+            max-width: 1000px; /* Wider for two columns */
+        }
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #333;
+            text-align: justify;
+        }
+        .map-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Navbar -->
+    {% include "public_home_nav.html" %}
+
+    <!-- Main Content -->
+    <div class="hero-section">
+        <div class="text-center">
+            <h3 class="custom-heading">
+                About ParkAlot
+            </h3>
+        </div>
+
+        <div class="container content-box">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="about-text">
+                        Welcome to ParkAlot a project made by Yatharth Pandey, student of IIT-M BS data science for the MAD-1 course. ParkAlot provides ultimate solution for hassle-free parking! We understand the daily challenges of finding a convenient and secure parking spot in bustling cities. That's why we built ParkAlot – an intuitive and efficient platform designed to connect drivers with available parking spaces in real-time.
+                    </p>
+                    <p class="about-text">
+                        Our mission is to revolutionize urban parking by leveraging technology to optimize space utilization, reduce traffic congestion, and provide a seamless experience for both parking lot owners and drivers. Whether you're looking for an open-air spot or a covered garage, ParkAlot offers a wide range of options to suit your needs.
+                    </p>
+                    <p class="about-text">
+                        With ParkAlot, you can easily search for parking lots by city or pincode, view real-time availability, compare prices, and book your spot in advance. Our user-friendly interface ensures that you spend less time searching for parking and more time doing what matters to you.
+                    </p>
+                    <p class="about-text">
+                        We are committed to expanding our network across India, bringing smart parking solutions to more cities and communities. Join the ParkAlot community today and experience the future of parking!
+                    </p>
+                </div>
+                
+    
+                <div class="col-md-6 d-flex flex-column align-items-center justify-content-center">
+                    <h4 class="text-center mb-3" style="color: #333;">Reach of our services</h4>
+                    <img src="/static/images/india_cities_map.png" alt="Our Services Reachability on Map of India" class="map-image">
+                </div>
+                
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}

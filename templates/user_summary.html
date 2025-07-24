@@ -1,0 +1,43 @@
+{% extends "base_layout.html" %}
+{% block title %}User Summary - ParkAlot{% endblock %}
+{% block head_extra %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="/static/css/navbar2.css">
+{% endblock %}
+
+{% block content %}
+{% include "user_navbar.html" %}
+
+<div class="hero-section">
+    <div class="container">
+        <h3 class="text-center mb-4 custom-heading">Your Parking Summary</h3>
+
+        <div class="card shadow-sm p-4 mb-4">
+            <h5 class="mb-3 text-center">Most Frequent Parking Lots</h5>
+            <canvas id="userChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+const ctx = document.getElementById('userChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ labels | safe }},
+        datasets: [{
+            label: 'Number of Bookings',
+            data: {{ counts | safe }},
+            backgroundColor: 'rgba(75, 192, 192, 0.7)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } }
+    }
+});
+</script>
+{% endblock %}
