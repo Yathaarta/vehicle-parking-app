@@ -88,10 +88,10 @@ body {
     color: #fff;
 }
 .spot.available {
-    background-color: #28a745; /* Green for Available */
+    background-color: #28a745; /* green for available */
 }
 .spot.occupied {
-    background-color: #dc3545; /* Red for Occupied */
+    background-color: #dc3545; /* red for occupied */
 }
 .spot:hover {
     transform: scale(1.08);

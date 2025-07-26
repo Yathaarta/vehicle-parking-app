@@ -10,7 +10,28 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
-        
+        .conflict-table-container {
+            margin-top: 20px;
+            border: 1px solid #ff9800; 
+            border-radius: 8px;
+            overflow-x: auto; 
+        }
+        .conflict-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .conflict-table th, .conflict-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .conflict-table th {
+            background-color: #ffc107; 
+            color: #333;
+        }
+        .conflict-table tbody tr:nth-child(even) {
+            background-color: #fff3e0; 
+        }
     </style>
 {% endblock %}
 
@@ -25,19 +46,22 @@
             <form method="POST">
                 <div class="mb-3">
                     <label class="form-label">Vehicle Number</label>
-                    <input type="text" name="vehicle_no" class="form-control" required value="{{ vehicle_no or '' }}">
+                    <input type="text" name="vehicle_no" class="form-control" required value="{{ vehicle_no or '' }}"
+                           {% if is_preview_mode %} readonly {% endif %}>
                 </div>
             
                 <div class="mb-3">
                     <label class="form-label">Parking Time</label>
                     <input type="datetime-local" name="parking_time" class="form-control" required
-                           value="{{ parking_time.strftime('%Y-%m-%dT%H:%M') if parking_time else '' }}">
+                           value="{{ parking_time.strftime('%Y-%m-%dT%H:%M') if parking_time else '' }}"
+                           {% if is_preview_mode %} readonly {% endif %}>
                 </div>
             
                 <div class="mb-3">
                     <label class="form-label">Leaving Time</label>
                     <input type="datetime-local" name="leaving_time" class="form-control" required
-                           value="{{ leaving_time.strftime('%Y-%m-%dT%H:%M') if leaving_time else '' }}">
+                           value="{{ leaving_time.strftime('%Y-%m-%dT%H:%M') if leaving_time else '' }}"
+                           {% if is_preview_mode %} readonly {% endif %}>
                 </div>
             
                 <div class="mb-3">
@@ -49,14 +73,49 @@
                     {% endif %}
                 </div>
             
-                {% if estimated_price %}
-                    <!-- Button for confirm -->
+                
+                {% if estimated_price and is_any_spot_available_for_period %}
+                    {# scenario 1: price estimated, AND at least one spot IS available -> show pay & confirm #}
                     <button type="submit" name="action" value="confirm" class="btn btn-success w-100">Pay & Confirm</button>
-                {% else %}
-                    <!-- Button for preview -->
+                    <a href="{{ url_for('book_spot', user_id=user.user_id, slug=slugify(user.user_name), lot_id=lot.lot_id) }}" 
+                       class="btn btn-warning w-100">Refill Form</a>
+                {% elif not estimated_price %}
+                    {# scenario 2: no price estimated yet show preview price #}
                     <button type="submit" name="action" value="preview" class="btn btn-primary w-100">Preview Price</button>
+                {% elif estimated_price and not is_any_spot_available_for_period %}
+                    {# senario 3: price estimated, BUT no spots are available Show Fill Again #}
+                    <a href="{{ url_for('book_spot', user_id=user.user_id, slug=slugify(user.user_name), lot_id=lot.lot_id) }}" 
+                       class="btn btn-warning w-100">Fill Again</a>
                 {% endif %}
             </form>
+
+            {# --- displaying confilicting bookings only if no spots are availabel right now --- #}
+            {% if estimated_price and not is_any_spot_available_for_period and conflicting_bookings_info %}
+            <div class="conflict-table-container">
+                <p class="text-danger p-3 mb-0"><strong>All spots in this lot are booked for the selected period.</strong></p>
+                <table class="conflict-table">
+                    <thead>
+                        <tr>
+                            <th>Spot ID</th>
+                            <th>Booked From</th>
+                            <th>Booked Until</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for conflict in conflicting_bookings_info %}
+                        <tr>
+                            <td>{{ conflict.spot_id }}</td>
+                            <td>{{ conflict.parking_time }}</td>
+                            <td>{{ conflict.leaving_time }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p class="text-muted text-sm p-3 mt-0">Please adjust your parking times or choose a different lot.</p>
+            </div>
+            {% endif %}
+            
+
             <p class="text-center mt-3">
                 <a href="{{ url_for('search_parking', user_id=user.user_id, slug=slugify(user.user_name)) }}">Go back</a>
             </p>

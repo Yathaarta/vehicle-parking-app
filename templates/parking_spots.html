@@ -4,6 +4,38 @@
 {% block head_extra %}
 {{ super() }}
 <link rel="stylesheet" href="/static/CSS/parking_spot.css">
+<style>
+    .spot.future-booked {
+        background-color: #9c27b0;
+        color: white;
+        border: 2px solid #7b1fa2;
+    }
+    .spot.occupied {
+        background-color: #f44336; 
+        color: white;
+        border: 2px solid #d32f2f;
+    }
+    .spot.available {
+        background-color: #4CAF50; 
+        color: white;
+        border: 2px solid #388E3C;
+    }
+
+    .future-bookings-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+        font-size: 0.9em;
+    }
+    .future-bookings-table th, .future-bookings-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    .future-bookings-table th {
+        background-color: #f2f2f2;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -16,14 +48,23 @@
             Parking Lot: <strong>{{ lot.primelocation_name }}</strong> (City: {{ lot.city }})
         </p>
 
+        <div class="text-center mb-4">
+            <span class="badge bg-primary fs-6 me-3">Total Spots: {{ total_spots_count }}</span>
+            <span class="badge bg-success fs-6 me-3">Available: {{ total_spots_count - occupied_physical_spots_count }}</span>
+            <span class="badge bg-danger fs-6">Physically Occupied: {{ occupied_physical_spots_count }}</span>
+        </div>
+
         <div class="row">
             <!-- Left: Spots Grid -->
             <div class="col-md-7">
                 <div class="spots-grid">
-                    {% for spot in spots %}
-                    <div class="spot {% if spot.status == 'O' %}occupied{% else %}available{% endif %}"
-                         onclick="showDetails({{ spot.spot_id }}, '{{ spot.status }}')">
-                        {{ spot.spot_id }}
+                    {% for spot_data in spots %} 
+                    <div class="spot 
+                         {% if spot_data.display_status == 'O' %}occupied
+                         {% elif spot_data.display_status == 'F' %}future-booked {# New class #}
+                         {% else %}available{% endif %}"
+                         onclick="showDetails({{ spot_data.spot_id }})"> 
+                        {{ spot_data.spot_id }}
                     </div>
                     {% endfor %}
                 </div>
@@ -40,62 +81,20 @@
             </div>
         </div>
 
-        <!-- Instructions -->
+        <!-- Add New spot button -->
+        <div class="text-center mt-4">
+            <form action="{{ url_for('add_spot', lot_id=lot.lot_id) }}" method="POST">
+                <button type="submit" class="btn btn-dark">+ Add New Spot to this Lot</button>
+            </form>
+        </div>
+
         <div class="instructions mt-3">
-            <p>✔ Click on an <strong style="color:red;">Occupied</strong> spot to view booking details.</p>
-            <p>✔ Click on an <strong style="color:green;">Available</strong> spot to delete it.</p>
+            <p>✔ Click on a <strong style="color:red;">Red (Occupied)</strong> spot to view current booking details.</p>
+            <p>✔ Click on a <strong style="color:#9c27b0;">Purple (Booked for Future)</strong> spot to view upcoming bookings.</p>
+            <p>✔ Click on a <strong style="color:green;">Green (Available)</strong> spot to delete it.</p>
         </div>
     </div>
 </div>
 
-<script>
-function showDetails(spotId, status) {
-    const panel = document.getElementById("details-content");
-
-    if (status === 'O') {
-        fetch(`/admin/spot-details/${spotId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    panel.innerHTML = `<p class="text-danger">${data.error}</p>`;
-                } else {
-                    panel.innerHTML = `
-                        <p><strong>User:</strong> ${data.user_name}</p>
-                        <p><strong>Email:</strong> ${data.email}</p>
-                        <p><strong>Vehicle No:</strong> ${data.vehicle_no}</p>
-                        <p><strong>Start:</strong> ${data.parking_time}</p>
-                        <p><strong>Expiry:</strong> ${data.leaving_time}</p>
-                        <p><strong>Paid Cost:</strong> ₹${data.parking_cost}</p>
-                        <button class="btn btn-secondary mt-2" onclick="clearDetails()">Close</button>
-                    `;
-                }
-            });
-    } else {
-        panel.innerHTML = `
-            <p><strong>Spot ID:</strong> ${spotId}</p>
-            <p><strong>Status:</strong> Available</p>
-            <button class="btn btn-danger mt-2" onclick="deleteSpot(${spotId})">Delete Spot</button>
-            <button class="btn btn-secondary mt-2" onclick="clearDetails()">Close</button>
-        `;
-    }
-}
-
-function clearDetails() {
-    document.getElementById("details-content").innerHTML = "Click a parking spot to view details here.";
-}
-
-function deleteSpot(spotId) {
-    if (confirm('Are you sure you want to delete this spot?')) {
-        fetch(`/admin/delete_spot/${spotId}`, { method: 'POST' })
-            .then(response => {
-                if (response.ok) {
-                    alert('Spot deleted successfully!');
-                    location.reload();
-                } else {
-                    alert('Failed to delete spot.');
-                }
-            });
-    }
-}
-</script>
+<script src="/static/js/parking_spot_scripts.js"></script>
 {% endblock %}

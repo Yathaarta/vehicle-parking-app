@@ -7,18 +7,30 @@
     {{ super() }}
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/navbar2.css">
+    <style>
+    .btn-cancel {
+        background-color: rgb(145, 49, 177);
+        color: white
+    }
+    .btn-cancel:hover,
+    .btn-cancel:focus,
+    .btn-cancel:active {
+        background-color: #7b1fa2; 
+        color: white; 
+        border-color: #5c1884; 
+    }
+    </style>
 
 {% endblock %}
 
 {% block content %}
-    <!-- Navbar -->
     {% include "user_navbar.html" %}
     
-    <!-- main-content -->
+    <!-- hero -->
     <div class="hero-section">
         <div class="container">
     
-            <!-- Search Parking Section -->
+            <!-- search parking section -->
             <div class="card mb-4 shadow-sm">
                 <div class="card-header bg-dark text-light">Search Parking</div>
                 <div class="card-body">
@@ -43,7 +55,7 @@
                 </div>
             </div>
     
-            <!-- Current Bookings Section -->
+            <!-- current bookings section -->
             <div class="card mb-4 shadow-sm">
                 <div class="card-header bg-warning text-dark">Current Bookings</div>
                 <div class="card-body">
@@ -52,6 +64,7 @@
                         <thead>
                             <tr>
                                 <th>Booking ID</th>
+                                <th>Spot ID</th>
                                 <th>Location</th>
                                 <th>Vehicle No</th>
                                 <th>Start Time</th>
@@ -63,13 +76,23 @@
                             {% for booking in current_bookings %}
                             <tr>
                                 <td>{{ booking.id }}</td>
-                                <td>{{ booking.lot.address }}</td>
+                                <td>{{ booking.spot.spot_id }}</td>
+                                <td>{{ booking.spot.lot.address }}</td>
                                 <td>{{ booking.vehicle_no }}</td>
                                 <td>{{ booking.parking_time.strftime('%d-%m-%Y %H:%M') }}</td>
                                 <td>{{ booking.leaving_time.strftime('%d-%m-%Y %H:%M') }}</td>
                                 <td>
-                                    <form action="{{ url_for('release_booking', booking_id=booking.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to release this booking?');">
-                                        <button type="submit" class="btn btn-danger btn-sm">Release</button>
+                                    <form action="{{ url_for('release_booking', user_id=user.user_id, slug=slugify(user.user_name), booking_id=booking.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to release this booking?');">
+                                        {# now from the route #}
+                                        {% if booking.parking_time <= now and booking.leaving_time > now %}
+                                            {# if booking is active show release button#}
+                                            <button type="submit" class="btn btn-danger btn-sm">Release</button>
+                                        {% elif booking.parking_time > now %}
+                                            {# if booking is of future show cancel button #}
+                                            <button type="submit" class="btn btn-cancel btn-sm">Cancel</button>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Expired</span>
+                                        {% endif %}
                                     </form>
                                 </td>
                             </tr>
@@ -82,7 +105,7 @@
                 </div>
             </div>
     
-            <!-- Recent History Section -->
+            <!-- recent history section -->
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">Recent Parking History</div>
                 <div class="card-body">
@@ -91,6 +114,7 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Spot ID</th>
                                 <th>Location</th>
                                 <th>Vehicle No</th>
                                 <th>Start DateTime</th>
@@ -102,8 +126,15 @@
                             <tr>
                                 <td>{{ record.id }}</td>
                                 <td>
-                                    {% if record.spot and record.spot.lot %}
-                                        {{ record.spot.lot.address }}
+                                    {% if record.spot_obj and record.spot_obj.spot_id %}
+                                        {{ record.spot_obj.spot_id }}
+                                    {% else %}
+                                        Deleted Spot
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if record.spot_obj and record.spot_obj.lot %}
+                                        {{ record.spot_obj.lot.address }}
                                     {% else %}
                                         Deleted Lot
                                     {% endif %}
@@ -127,3 +158,4 @@
         </div>
     </div>
 {% endblock %}
+

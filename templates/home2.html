@@ -7,21 +7,17 @@
 
     {{super()}}
     
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-    
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/css/navbar2.css">
 
 {% endblock %}
 
 {% block content %}
-    <!-- Navbar -->
     {% include "public_home_nav.html" %}
 
-    <!-- Hero Section -->
+    <!-- Hero -->
     <div class="hero-section d-flex justify-content-between align-items-center p-4">
-        <!-- Left Text -->
+        <!-- Left text -->
         <div class="custom-heading">
             <h1 class="fw-bold">Booking Parking gets easy with ParkAlot</h1>
             <h5>Book your parking spot in seconds with ease.</h5><br><br>
@@ -32,7 +28,7 @@
             Visit about us page to know more about us.
         </div>
 
-        <!-- Bootstrap Form -->
+        <!-- bootstrap form -->
         <div class="card p-4" style="width: 415px; height: 450px;">
             <h5 class="mb-3">Find and Book a Parking Spot</h5>
             <form method="POST" action="{{ url_for('home') }}">

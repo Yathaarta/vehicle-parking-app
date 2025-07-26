@@ -7,14 +7,13 @@
 {% endblock %}
 
 {% block content %}
-    <!-- Navbar -->
     {% include "user_navbar.html" %}
-    <!-- main-content -->
 
+    <!-- hero -->
 <div class="hero-section">
     <div class="container">
 
-        <!-- Search Form -->
+        <!-- search form -->
         <div class="card mb-4 shadow-sm">
             <div class="card-header bg-dark text-white">Search Parking</div>
             <div class="card-body">
@@ -39,45 +38,53 @@
             </div>
         </div>
 
-        <!-- Parking Lot Results -->
-        {% if parking_lots %}
+        <!-- result table -->
+        {% if parking_lots_with_stats %} 
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">Available Parking Lots</div>
             <div class="card-body">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Lot ID</th>
-                            <th>City</th>
-                            <th>Prime Location</th>
-                            <th>Address</th>
-                            <th>Price/hr (₹)</th>
-                            <th>Capacity</th>
-                            <th>Available</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for lot in parking_lots %}
-                        <tr>
-                            <td>{{ lot.lot_id }}</td>
-                            <td>{{ lot.city }}</td>
-                            <td>{{ lot.primelocation_name }}</td>
-                            <td>{{ lot.address }}</td>
-                            <td>{{ lot.price_per_hr }}</td>
-                            <td>{{ lot.max_spots }}</td>
-                            <td>{{ lot.max_spots - lot.occupied_spots }}</td>
-                            <td>
-                                {% if lot.max_spots > lot.occupied_spots %}
-                                    <a href="{{ url_for('book_spot', user_id=user.user_id, slug=slugify(user.user_name), lot_id=lot.lot_id) }}" class="btn btn-success btn-sm">Book Now</a>
-                                {% else %}
-                                    <span class="badge bg-danger">Full</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div class="table-responsive"> 
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Lot ID</th>
+                                <th>City</th>
+                                <th>Prime Location</th>
+                                <th>Address</th>
+                                <th>Price/hr (₹)</th>
+                                <th>Total Spots</th> {# Changed from Capacity #}
+                                <th>Physically Occupied</th> {# NEW: Added column for physical occupancy #}
+                                <th>Booked Spots (Current/Future)</th> {# Changed from Available, clarified #}
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lot_stats in parking_lots_with_stats %}
+                            <tr>
+                                <td>{{ lot_stats.lot.lot_id }}</td>
+                                <td>{{ lot_stats.lot.city }}</td>
+                                <td>{{ lot_stats.lot.primelocation_name }}</td>
+                                <td>{{ lot_stats.lot.address }}</td>
+                                <td>{{ lot_stats.lot.price_per_hr }}</td>
+                                <td>{{ lot_stats.total_spots }}</td> {# Display total_spots #}
+                                <td>{{ lot_stats.occupied_physical_spots }}</td> {# Display physically_occupied_spots #}
+                                <td>{{ lot_stats.booked_spots_count }}</td> {# Display booked_spots_count #}
+                                <td>
+                                    {# Logic for Action button #}
+                                    {% if lot_stats.occupied_physical_spots == lot_stats.total_spots %}
+                                        {# All spots are physically occupied right now #}
+                                        <span class="badge bg-warning text-dark me-2">Currently Full</span>
+                                        <a href="{{ url_for('book_spot', user_id=user.user_id, slug=slugify(user.user_name), lot_id=lot_stats.lot.lot_id) }}" class="btn btn-primary btn-sm">Book for Future</a>
+                                    {% else %}
+                                        {# There's at least one physically available spot right now #}
+                                        <a href="{{ url_for('book_spot', user_id=user.user_id, slug=slugify(user.user_name), lot_id=lot_stats.lot.lot_id) }}" class="btn btn-success btn-sm">Book Now</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         {% endif %}

@@ -17,15 +17,14 @@
 {% endblock %}
 
 {% block content %}
-    <!-- Navbar -->
     {% include "admin_navbar.html" %}
     
     <div class="hero-section">
-    <!-- Profile Content -->
+    <!-- profile content -->
     <div class="container mt-4">
         <div class="row justify-content-center">
             <div class="col-lg-6">
-                <!-- User Info Card -->
+                <!-- user info card -->
                 <div class="card mb-4 shadow-sm">
                     <div class="card-body">
                         <h4 class="card-title mb-3">Profile Details</h4>
@@ -34,21 +33,20 @@
                     </div>
                 </div>
     
-                <!-- Update Options -->
+                <!-- update Options -->
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h5 class="mb-3">Update Your Details</h5>
     
-                        <!-- Buttons -->
+                        <!-- buttons -->
                         <div class="d-flex flex-column gap-2">
                             <button class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#updateName">Edit Name</button>
                             <button class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#updateEmail">Change Email</button>
                             <button class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#updatePassword">Change Password</button>
                         </div>
     
-                        <!-- Update Name Form -->
                         <div class="collapse mt-3" id="updateName">
-                            <form method="POST" action="{{ url_for('profile', user_id=user.user_id, slug=slugify(user.user_name)) }}">
+                            <form method="POST" action="{{ url_for('admin_profile') }}">
                                 <input type="hidden" name="action" value="update_name">
                                 <div class="mb-3">
                                     <label for="username" class="form-label">New Name</label>
@@ -58,9 +56,8 @@
                             </form>
                         </div>
     
-                        <!-- Update Email Form -->
                         <div class="collapse mt-3" id="updateEmail">
-                            <form method="POST" action="{{ url_for('profile', user_id=user.user_id, slug=slugify(user.user_name)) }}">
+                            <form method="POST" action="{{ url_for('admin_profile') }}">
                                 <input type="hidden" name="action" value="update_email">
                                 <div class="mb-3">
                                     <label for="email" class="form-label">New Email</label>
@@ -70,9 +67,8 @@
                             </form>
                         </div>
     
-                        <!-- Update Password Form -->
                         <div class="collapse mt-3" id="updatePassword">
-                            <form method="POST" action="{{ url_for('profile', user_id=user.user_id, slug=slugify(user.user_name)) }}">
+                            <form method="POST" action="{{ url_for('admin_profile') }}">
                                 <input type="hidden" name="action" value="update_password">
                                 <div class="mb-3">
                                     <label for="old_password" class="form-label">Old Password</label>

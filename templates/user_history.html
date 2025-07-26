@@ -8,9 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/navbar2.css">
     <style>
-        /* Make history scrollable inside card */
+       
         .scrollable-history {
-            max-height: 400px; /* Adjust as needed */
+            max-height: 500px; 
             overflow-y: auto;
         }
         .scrollable-history::-webkit-scrollbar {
@@ -27,10 +27,9 @@
 {% endblock %}
 
 {% block content %}
-    <!-- Navbar -->
     {% include "user_navbar.html" %}
 
-    <!-- Main Content -->
+    <!-- hero -->
     <div class="hero-section">
         <div class="container">
             <div class="card shadow-sm">
@@ -41,6 +40,7 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Spot ID</th>
                                 <th>Location</th>
                                 <th>Vehicle No</th>
                                 <th>Start DateTime</th>
@@ -53,8 +53,15 @@
                             <tr>
                                 <td>{{ record.id }}</td>
                                 <td>
-                                    {% if record.spot and record.spot.lot %}
-                                        {{ record.spot.lot.address }}
+                                    {% if record.spot_obj.spot_id and record.spot_obj %}
+                                        {{ record.spot_obj.spot_id }}</td>
+                                    {% else %}
+                                        Deleted Spot
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if record.spot_obj and record.spot_obj.lot %}
+                                        {{ record.spot_obj.lot.address }}
                                     {% else %}
                                         Deleted Lot
                                     {% endif %}
