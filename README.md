@@ -36,24 +36,23 @@ The project follows a modular and organized directory structure:
 
 root/
 ├── controllers/
-│   ├── config.py                               # Application configuration settings
-│   ├── decorators.py                           # Custom decorators for access control
-│   └── routes.py                               # Defines all Flask routes and view logic
+│   ├── config.py                               # Application configuration settings
+│   ├── decorators.py                           # Custom decorators for access control
+│   └── routes.py                               # Defines all Flask routes and view logic
 ├── models/
-│   └── dbmodel.py                              # SQLAlchemy database models and schema definitions
+│   └── dbmodel.py                              # SQLAlchemy database models and schema definitions
 ├── static/
-│   ├── css/
-│   │   ├── navbar2.css                         # Styles for navigation bar
-│   │   └── parking_spot.css                    # Styles specific to parking spot display
-│   ├── images/
-│   │   └── (all images)                        # Project images (e.g., logo, background)
-│   └── js/
-│       └── parking_spot_scripts.js             # JavaScript for dynamic frontend interactions
+│   ├── css/
+│   │   ├── navbar2.css                         # Styles for navigation bar
+│   │   └── parking_spot.css                    # Styles specific to parking spot display
+│   ├── images/
+│   │   └── (all images)                        # Project images (e.g., logo, background)
+│   └── js/
+│       └── parking_spot_scripts.js             # JavaScript for dynamic frontend interactions
 ├── templates/
-│   └── (all HTML files)                        # Jinja2 HTML templates for rendering pages
-├── .env                                        # Environment variables (e.g., database URI, secret key)
-└── app.py                                      # Main Flask application instance and entry point
-
+│   └── (all HTML files)                        # Jinja2 HTML templates for rendering pages
+├── .env                                        # Environment variables (e.g., database URI, secret key)
+└── app.py                                      # Main Flask application instance and entry point
 
 ## Technologies Used
 
