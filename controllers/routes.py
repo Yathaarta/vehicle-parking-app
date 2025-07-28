@@ -8,7 +8,7 @@ from sqlalchemy import func
 import json
 
 from .decorators import login_required, admin_required, only_user, user_access_required
-app.permanent_session_lifetime = timedelta(minutes=10)   #set session lifetime to 10 minutes
+app.permanent_session_lifetime = timedelta(minutes=10)   #set session lifetime to 10 minutes 
 
 
 # ---------------------------------------------PUBLIC ROUTES------------------------------------------------
@@ -61,7 +61,7 @@ def login():
         flash("Incorrect Password", "warning")
         return redirect(url_for('login'))
 
-    # Store session
+    # Store user's session
     session['user_id'] = user.user_id
     session['username'] = user.user_name
     session['is_admin'] = user.is_admin
@@ -229,7 +229,7 @@ def update_spot_statuses_for_user(user_id):
     if bookings_to_activate or bookings_to_expire:
         db.session.commit()
     
-    return messages_to_flash # return counts for flash messages
+    return messages_to_flash # return flash messages list
 
 
 # ---------------------------------------------USER ROUTES------------------------------------------------
@@ -373,7 +373,7 @@ def profile(user_id, slug, user): # 'user' object is injected
             # This is important if the user's last booking expired but they didn't release it.
             occupied_spots_by_user = ParkingSpot.query.join(UserBookings).filter(
                 UserBookings.user_id == user.user_id,
-                ParkingSpot.status == 'O' # Only care about physically occupied spots
+                ParkingSpot.status == 'O' # Only care about physically occupied spots cause others are already A
             ).all()
 
             for spot in occupied_spots_by_user:
@@ -383,7 +383,6 @@ def profile(user_id, slug, user): # 'user' object is injected
             UserBookings.query.filter_by(user_id=user.user_id).delete()
             UserHistory.query.filter_by(user_id=user.user_id).delete()
             
-            # Delete user
             db.session.delete(user)
             db.session.commit()
 
@@ -491,21 +490,15 @@ def book_spot(user_id, slug, lot_id, user):
     is_preview_mode = False 
     conflicting_bookings_info = [] # this list will only be populated if "all" spots are conflicting
     is_any_spot_available_for_period = False # Intitially false cause if available we set it to true
+
     if request.method == 'POST':
         vehicle_no = request.form.get('vehicle_no')
         parking_time_str = request.form.get('parking_time')
         leaving_time_str = request.form.get('leaving_time')
         action = request.form.get('action')  # 'preview' or 'confirm'
 
-        try:
-            parking_time = datetime.fromisoformat(parking_time_str)
-            leaving_time = datetime.fromisoformat(leaving_time_str)
-        except ValueError:
-            flash("Invalid date format! Please use YYYY-MM-DDTHH:MM format.", "danger")
-            return render_template('book_spot.html', user=user, lot=lot, 
-                                   vehicle_no=vehicle_no, parking_time=parking_time, leaving_time=leaving_time,
-                                   is_preview_mode=is_preview_mode, conflicting_bookings_info=conflicting_bookings_info,
-                                   is_any_spot_available_for_period=is_any_spot_available_for_period) 
+        parking_time = datetime.fromisoformat(parking_time_str)
+        leaving_time = datetime.fromisoformat(leaving_time_str)
 
         now = datetime.now()
         limit = now + timedelta(days=10) #booking period must be within next 10 days from now
@@ -610,7 +603,7 @@ def book_spot(user_id, slug, lot_id, user):
     return render_template('book_spot.html',user=user, lot=lot, estimated_price=estimated_price,
                            vehicle_no=vehicle_no, parking_time=parking_time, leaving_time=leaving_time,
                            is_preview_mode=is_preview_mode, conflicting_bookings_info=conflicting_bookings_info,
-                           is_any_spot_available_for_period=is_any_spot_available_for_period) # <-- Pass new var
+                           is_any_spot_available_for_period=is_any_spot_available_for_period)
 #-----------------------
 # USER SUMMARY 
 #-----------------------
