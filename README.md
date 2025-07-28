@@ -34,6 +34,7 @@ This project implements a multi-user Vehicle Parking App, designed to efficientl
 
 The project follows a modular and organized directory structure:
 
+```
 root/
 ├── controllers/
 │   ├── config.py                               # Application configuration settings
@@ -53,6 +54,7 @@ root/
 │   └── (all HTML files)                        # Jinja2 HTML templates for rendering pages
 ├── .env                                        # Environment variables (e.g., database URI, secret key)
 └── app.py                                      # Main Flask application instance and entry point
+```
 
 ## Technologies Used
 
