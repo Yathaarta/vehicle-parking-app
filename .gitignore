@@ -97,3 +97,10 @@ node_modules/
 npm-debug.log
 yarn-error.log
 package-lock.json # If you're using npm and don't want to track this. Usually you DO want to track this.
+
+# ----------------------------------
+# Ignore images in root folder
+# ----------------------------------
+
+# Ignore images only in the root directory
+/*.png
