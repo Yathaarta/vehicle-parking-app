@@ -121,15 +121,18 @@ Below is a list of completed milestones for this project:
 ## Screenshots
 
 * Landing page
+
 ![alt text](https://github.com/user-attachments/assets/f2f3e914-b730-4f10-aec9-2c819a1a8839)
 
 * Admin Dashboard, User home and parking spots
+
 ![alt text](https://github.com/user-attachments/assets/f03acb84-72f7-471f-99c7-47eaf61d3c66)
 ![alt text](https://github.com/user-attachments/assets/10999812-15c9-4fbf-b13f-6695f1794733)
-![alt text](https://github.com/user-attachments/assets/32431486-2cbf-4cff-856e-f71d0a5ab6fa)
 ![alt text](https://github.com/user-attachments/assets/48c19557-c119-4523-a00a-9a13bf76a969)
 
 * Forms
+
+![alt text](https://github.com/user-attachments/assets/32431486-2cbf-4cff-856e-f71d0a5ab6fa)
 ![alt text](https://github.com/user-attachments/assets/7ca71c69-a330-4d16-a834-28a3b3f4a794)
 ![alt text](https://github.com/user-attachments/assets/ea45bccf-3ff9-4914-8d82-438d8b674f40)
 ![alt text](https://github.com/user-attachments/assets/e23d7fa5-0f96-4573-83ee-9e261a5d3043)
